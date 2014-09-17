@@ -1,5 +1,6 @@
-from twisted.web import server, resource
-from twisted.internet import reactor, endpoints
+from twisted.web.server import Site
+from twisted.web.resource import Resource
+from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 
 import json
@@ -16,9 +17,9 @@ def setCurrentColor():
   ledStrip.update()
 
 colorLoop = LoopingCall(setCurrentColor)
-colorLoop.start(0.5)
+colorLoop.start(1)
 
-class ColorController(resource.Resource):
+class ColorController(Resource):
   isLeaf = True
 
   def render_GET(self, request):
@@ -32,5 +33,5 @@ class ColorController(resource.Resource):
     return json.dumps(currentColor)
 
 if __name__ == '__main__':
-  endpoints.serverFromString(reactor, "tcp:3000").listen(server.Site(ColorController()))
+  reactor.listenTCP(3000, Site(ColorController()))
   reactor.run()
