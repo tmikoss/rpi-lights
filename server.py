@@ -3,38 +3,27 @@ from twisted.web.resource import Resource
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 
-import json
-import platform
+from LedManager import LedManager
 
-if platform.system() == 'Darwin':
-  from mock_led_strip import LedStrip_WS2801
-else:
-  from vendor.LedStrip_WS2801 import LedStrip_WS2801
+manager = LedManager()
 
-numberOfLeds = 25
-currentColor = { 'r': 0, 'g': 0, 'b': 0 }
-
-ledStrip = LedStrip_WS2801(numberOfLeds)
-
-def setCurrentColor():
-  ledStrip.setAll([currentColor['r'], currentColor['g'], currentColor['b']])
-  ledStrip.update()
-
-colorLoop = LoopingCall(setCurrentColor)
+colorLoop = LoopingCall(manager.loop)
 colorLoop.start(1)
 
 class ColorController(Resource):
   isLeaf = True
 
-  def render_GET(self, request):
+  def setJson(self, request):
     request.setHeader("content-type", "application/json; charset=utf-8")
-    return json.dumps(currentColor)
+
+  def render_GET(self, request):
+    self.setJson(request)
+    return manager.toJson()
 
   def render_POST(self, request):
-    request.setHeader("content-type", "application/json; charset=utf-8")
-    for key in currentColor:
-      currentColor[key] = int(request.args[key][0])
-    return json.dumps(currentColor)
+    self.setJson(request)
+    manager.updateFromArgs(request.args)
+    return manager.toJson()
 
 if __name__ == '__main__':
   reactor.listenTCP(3000, Site(ColorController()))
