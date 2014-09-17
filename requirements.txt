@@ -1,7 +1,1 @@
-GDAL==1.11.0
-PocketSphinx==0.8
-SphinxBase==0.8
 Twisted==14.0.1
-vboxapi==1.0
-wsgiref==0.1.2
-zope.interface==4.1.1
