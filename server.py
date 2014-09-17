@@ -6,19 +6,19 @@ from twisted.internet.task import LoopingCall
 import json
 import platform
 
+if platform.system() == 'Darwin':
+  from mock_led_strip import LedStrip_WS2801
+else:
+  from vendor.LedStrip_WS2801 import LedStrip_WS2801
+
 numberOfLeds = 25
 currentColor = { 'r': 0, 'g': 0, 'b': 0 }
 
-if platform.system() == 'Darwin':
-  def setCurrentColor():
-    print currentColor
-else:
-  from vendor.LedStrip_WS2801 import LedStrip_WS2801
-  ledStrip = LedStrip_WS2801(numberOfLeds)
+ledStrip = LedStrip_WS2801(numberOfLeds)
 
-  def setCurrentColor():
-    ledStrip.setAll([currentColor['r'], currentColor['g'], currentColor['b']])
-    ledStrip.update()
+def setCurrentColor():
+  ledStrip.setAll([currentColor['r'], currentColor['g'], currentColor['b']])
+  ledStrip.update()
 
 colorLoop = LoopingCall(setCurrentColor)
 colorLoop.start(1)
