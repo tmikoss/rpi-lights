@@ -8,7 +8,7 @@ from LedManager import LedManager
 manager = LedManager()
 
 colorLoop = LoopingCall(manager.loop)
-colorLoop.start(1)
+colorLoop.start(1.0 / manager.timeScale)
 
 class ColorController(Resource):
   isLeaf = True
