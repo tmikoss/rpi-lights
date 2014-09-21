@@ -1,14 +1,10 @@
 from twisted.web.server import Site
 from twisted.web.resource import Resource
 from twisted.internet import reactor
-from twisted.internet.task import LoopingCall
 
 from LedManager import LedManager
 
 manager = LedManager()
-
-colorLoop = LoopingCall(manager.loop)
-colorLoop.start(1.0 / manager.timeScale)
 
 class ColorController(Resource):
   isLeaf = True

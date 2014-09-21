@@ -13,56 +13,27 @@ class LedManager:
     self.ledCount = 25
     self.ledStrip = LedStrip_WS2801(self.ledCount)
 
-    self.timeScale = 1
+    self.r = 0
+    self.g = 0
+    self.b = 0
+    self.a = 0
 
-    self.currentColor = [0,0,0] # RBG
-
-    self.tweenFrom           = copy.copy(self.currentColor)
-    self.tweenTo             = copy.copy(self.currentColor)
-    self.tweenChange         = copy.copy(self.currentColor)
-    self.tweenTotalSteps     = 0
-    self.tweenRemainingSteps = 0
-
-  # Assumed to run self.timeScale times every second
-  def loop(self):
-    self.tweenColor()
     self.updateLedStrip()
 
   def updateLedStrip(self):
-    self.ledStrip.setAll(self.currentColor)
+    self.ledStrip.setAll(map(lambda x: int(x * self.a / 100), [self.r, self.b, self.g]))
     self.ledStrip.update()
 
   def toJson(self):
-    return json.dumps({ 'r': self.tweenTo[0], 'b': self.tweenTo[1], 'g': self.tweenTo[2] })
-
-  def setupTween(self, goalColor, steps):
-    self.tweenFrom            = copy.copy(self.currentColor)
-    self.tweenTo              = goalColor
-    self.tweenChange          = map(operator.sub, self.tweenTo, self.tweenFrom)
-    self.tweenTotalSteps      = steps
-    self.tweenRemainingSteps  = steps
-
-  def tweenColor(self):
-    if not self.tweenRemainingSteps > 0:
-      return
-
-    thisStep = float(self.tweenTotalSteps - self.tweenRemainingSteps) + 1
-    progress = thisStep / self.tweenTotalSteps
-
-    for index in [0,1,2]:
-      newValue = (self.tweenChange[index] * progress) + self.tweenFrom[index]
-      self.currentColor[index] = intInRange(newValue, 0, self.tweenTo[index])
-
-    self.tweenRemainingSteps -= 1
+    return json.dumps({ 'r': self.r, 'g': self.g, 'b': self.b, 'a': self.a })
 
   def updateFromArgs(self, args):
-    r = intInRange(args.get('r', [self.currentColor[0]])[0], 0, 255)
-    b = intInRange(args.get('b', [self.currentColor[1]])[0], 0, 255)
-    g = intInRange(args.get('g', [self.currentColor[2]])[0], 0, 255)
+    self.r = intInRange(args.get('r', [self.a])[0], 0, 255)
+    self.b = intInRange(args.get('b', [self.b])[0], 0, 255)
+    self.g = intInRange(args.get('g', [self.g])[0], 0, 255)
+    self.a = intInRange(args.get('a', [self.a])[0], 0, 100)
 
-    seconds = intInRange(args.get('seconds', [5])[0], 1, 3600)
-
-    self.setupTween([r,b,g], int(seconds * self.timeScale))
+    self.updateLedStrip()
 
 def intInRange(value, minValue, maxValue):
   return min(max(int(value), minValue), maxValue)
