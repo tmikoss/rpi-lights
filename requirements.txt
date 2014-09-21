@@ -1,1 +1,2 @@
-Twisted==14.0.1
+Twisted>=14.0.1
+crontab>=0.20

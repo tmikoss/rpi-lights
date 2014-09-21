@@ -18,7 +18,8 @@ class ColorController(Resource):
 
   def render_POST(self, request):
     self.setJson(request)
-    manager.updateFromArgs(request.args)
+    for key in ['r', 'g', 'b', 'a']:
+      setattr(manager, key, request.args.get(key, [getattr(manager, key)])[0])
     return manager.toJson()
 
 if __name__ == '__main__':

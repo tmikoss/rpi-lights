@@ -3,21 +3,66 @@ import json
 import copy
 import operator
 
+from Alarm import Alarm
+
 if platform.system() == 'Darwin':
   from MockLedStrip import LedStrip_WS2801
 else:
   from vendor.LedStrip_WS2801 import LedStrip_WS2801
 
-class LedManager:
+class LedManager(object):
   def __init__(self):
     self.ledCount = 25
     self.ledStrip = LedStrip_WS2801(self.ledCount)
 
-    self.r = 0
-    self.g = 0
-    self.b = 0
-    self.a = 0
+    self._r = 255
+    self._g = 255
+    self._b = 255
+    self._a = 0
 
+    self.alarms = []
+    self.alarmStrings = [
+      "30 6 * * 1,2,3,4,5",
+      "30 8 * * 6,7"
+    ]
+
+    self.updateLedStrip()
+    self.initAlarms()
+
+  @property
+  def r(self):
+    return self._r
+
+  @r.setter
+  def r(self, value):
+    self._r = intInRange(value, 0 , 255)
+    self.updateLedStrip()
+
+  @property
+  def g(self):
+    return self._g
+
+  @g.setter
+  def g(self, value):
+    self._g = intInRange(value, 0 , 255)
+    self.updateLedStrip()
+
+  @property
+  def b(self):
+    return self._b
+
+  @b.setter
+  def b(self, value):
+    self._b = intInRange(value, 0 , 255)
+    self.updateLedStrip()
+
+  @property
+  def a(self):
+    return self._a
+
+  @a.setter
+  def a(self, value):
+    self._a = intInRange(value, 0 , 100)
     self.updateLedStrip()
 
   def updateLedStrip(self):
@@ -27,13 +72,13 @@ class LedManager:
   def toJson(self):
     return json.dumps({ 'r': self.r, 'g': self.g, 'b': self.b, 'a': self.a })
 
-  def updateFromArgs(self, args):
-    self.r = intInRange(args.get('r', [self.a])[0], 0, 255)
-    self.b = intInRange(args.get('b', [self.b])[0], 0, 255)
-    self.g = intInRange(args.get('g', [self.g])[0], 0, 255)
-    self.a = intInRange(args.get('a', [self.a])[0], 0, 100)
+  def initAlarms(self):
+    for alarm in self.alarms:
+      alarm.cancel()
+      self.alarms.remove(alarm)
 
-    self.updateLedStrip()
+    for alarmString in self.alarmStrings:
+      self.alarms.append(Alarm(alarmString, self))
 
 def intInRange(value, minValue, maxValue):
   return min(max(int(value), minValue), maxValue)

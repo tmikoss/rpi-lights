@@ -1,4 +1,4 @@
-class LedStrip_WS2801:
+class LedStrip_WS2801(object):
   def __init__(self, numberOfLeds):
     self.numberOfLeds = numberOfLeds
     self.colorArray = [0,0,0]
