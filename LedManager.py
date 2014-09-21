@@ -74,13 +74,12 @@ class LedManager(object):
 
   @alarms.setter
   def alarms(self, value):
-    print value
     for alarm in self._alarms:
       alarm.cancel()
       self._alarms.remove(alarm)
 
     for alarmString in value:
-      self._alarms.append(Alarm(alarmString, self))
+      self._alarms.append(Alarm(alarmString, self, seconds=30*60))
 
   def updateLedStrip(self):
     if self.nextTurnOff and self.nextTurnOff.active():
