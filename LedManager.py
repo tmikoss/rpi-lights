@@ -2,6 +2,7 @@ import platform
 import json
 import copy
 import operator
+from twisted.internet import reactor
 
 from Alarm import Alarm
 
@@ -14,6 +15,9 @@ class LedManager(object):
   def __init__(self):
     self.ledCount = 25
     self.ledStrip = LedStrip_WS2801(self.ledCount)
+
+    self.nextTurnOff = None
+    self.idleTimeoutSeconds = 60*60
 
     self._r = 255
     self._g = 255
@@ -66,8 +70,14 @@ class LedManager(object):
     self.updateLedStrip()
 
   def updateLedStrip(self):
+    if self.nextTurnOff and self.nextTurnOff.active():
+      self.nextTurnOff.cancel()
+
     self.ledStrip.setAll(map(lambda x: int(x * self.a / 100), [self.r, self.b, self.g]))
     self.ledStrip.update()
+
+    if self.a > 0:
+      self.nextTurnOff = reactor.callLater(self.idleTimeoutSeconds, self.turnOff)
 
   def toJson(self):
     return json.dumps({ 'r': self.r, 'g': self.g, 'b': self.b, 'a': self.a })
@@ -79,6 +89,9 @@ class LedManager(object):
 
     for alarmString in self.alarmStrings:
       self.alarms.append(Alarm(alarmString, self))
+
+  def turnOff(self):
+    self.a = 0
 
 def intInRange(value, minValue, maxValue):
   return min(max(int(value), minValue), maxValue)

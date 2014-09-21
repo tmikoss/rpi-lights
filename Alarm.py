@@ -10,17 +10,18 @@ class Alarm(object):
     self.ticks      = seconds / self.tickDelta
     self.goalAlpha  = goalAlpha
 
-    self.nextRun    = reactor.callLater(self.cron.next(), self.run)
+    self.nextRun       = reactor.callLater(self.cron.next(), self.run)
+    self.nextIncrement = None
 
   def run(self):
     self.nextRun = reactor.callLater(self.cron.next(), self.run)
     self.scheduleIncrements()
 
   def cancel(self):
-    if self.nextRun:
+    if self.nextRun and self.nextRun.active():
       self.nextRun.cancel()
 
-    if self.nextIncrement:
+    if self.nextIncrement and self.nextIncrement.active():
       self.nextIncrement.cancel()
 
   def scheduleIncrements(self):
