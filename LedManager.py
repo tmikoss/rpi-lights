@@ -19,19 +19,18 @@ class LedManager(object):
     self.nextTurnOff = None
     self.idleTimeoutSeconds = 60*60
 
-    self._r = 255
-    self._g = 255
-    self._b = 255
-    self._a = 0
+    self._r      = 255
+    self._g      = 255
+    self._b      = 255
+    self._a      = 0
+    self._alarms = []
 
-    self.alarms = []
-    self.alarmStrings = [
+    self.alarms  = [
       "30 6 * * 1,2,3,4,5",
       "30 8 * * 6,7"
     ]
 
     self.updateLedStrip()
-    self.initAlarms()
 
   @property
   def r(self):
@@ -69,6 +68,20 @@ class LedManager(object):
     self._a = intInRange(value, 0 , 100)
     self.updateLedStrip()
 
+  @property
+  def alarms(self):
+    return map(str, self._alarms)
+
+  @alarms.setter
+  def alarms(self, value):
+    print value
+    for alarm in self._alarms:
+      alarm.cancel()
+      self._alarms.remove(alarm)
+
+    for alarmString in value:
+      self._alarms.append(Alarm(alarmString, self))
+
   def updateLedStrip(self):
     if self.nextTurnOff and self.nextTurnOff.active():
       self.nextTurnOff.cancel()
@@ -79,16 +92,8 @@ class LedManager(object):
     if self.a > 0:
       self.nextTurnOff = reactor.callLater(self.idleTimeoutSeconds, self.turnOff)
 
-  def toJson(self):
+  def colorJson(self):
     return json.dumps({ 'r': self.r, 'g': self.g, 'b': self.b, 'a': self.a })
-
-  def initAlarms(self):
-    for alarm in self.alarms:
-      alarm.cancel()
-      self.alarms.remove(alarm)
-
-    for alarmString in self.alarmStrings:
-      self.alarms.append(Alarm(alarmString, self))
 
   def turnOff(self):
     self.a = 0

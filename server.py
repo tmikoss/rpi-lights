@@ -14,13 +14,13 @@ class ColorController(Resource):
 
   def render_GET(self, request):
     self.setJson(request)
-    return manager.toJson()
+    return manager.colorJson()
 
   def render_POST(self, request):
     self.setJson(request)
     for key in ['r', 'g', 'b', 'a']:
       setattr(manager, key, request.args.get(key, [getattr(manager, key)])[0])
-    return manager.toJson()
+    return manager.colorJson()
 
 if __name__ == '__main__':
   reactor.listenTCP(3000, Site(ColorController()))

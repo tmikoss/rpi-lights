@@ -4,7 +4,8 @@ from crontab import CronTab
 class Alarm(object):
   def __init__(self, cronString, ledManager, seconds=60, goalAlpha=100):
     self.ledManager = ledManager
-    self.cron       = CronTab(cronString)
+    self.cronString = cronString
+    self.cron       = CronTab(self.cronString)
 
     self.tickDelta  = 0.5
     self.ticks      = seconds / self.tickDelta
@@ -12,6 +13,9 @@ class Alarm(object):
 
     self.nextRun       = reactor.callLater(self.cron.next(), self.run)
     self.nextIncrement = None
+
+  def __str__(self):
+    return self.cronString
 
   def run(self):
     self.nextRun = reactor.callLater(self.cron.next(), self.run)
