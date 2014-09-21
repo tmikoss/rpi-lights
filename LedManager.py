@@ -15,7 +15,7 @@ class LedManager:
 
     self.timeScale = 1
 
-    self.currentColor = [0,0,0]
+    self.currentColor = [0,0,0] # RBG
 
     self.tweenFrom           = copy.copy(self.currentColor)
     self.tweenTo             = copy.copy(self.currentColor)
@@ -33,7 +33,7 @@ class LedManager:
     self.ledStrip.update()
 
   def toJson(self):
-    return json.dumps({ 'r': self.tweenTo[0], 'g': self.tweenTo[1], 'b': self.tweenTo[2] })
+    return json.dumps({ 'r': self.tweenTo[0], 'b': self.tweenTo[1], 'g': self.tweenTo[2] })
 
   def setupTween(self, goalColor, steps):
     self.tweenFrom            = copy.copy(self.currentColor)
@@ -57,12 +57,12 @@ class LedManager:
 
   def updateFromArgs(self, args):
     r = intInRange(args.get('r', [self.currentColor[0]])[0], 0, 255)
-    g = intInRange(args.get('g', [self.currentColor[1]])[0], 0, 255)
-    b = intInRange(args.get('b', [self.currentColor[2]])[0], 0, 255)
+    b = intInRange(args.get('b', [self.currentColor[1]])[0], 0, 255)
+    g = intInRange(args.get('g', [self.currentColor[2]])[0], 0, 255)
 
     seconds = intInRange(args.get('seconds', [5])[0], 1, 3600)
 
-    self.setupTween([r,g,b], int(seconds * self.timeScale))
+    self.setupTween([r,b,g], int(seconds * self.timeScale))
 
 def intInRange(value, minValue, maxValue):
   return min(max(int(value), minValue), maxValue)
