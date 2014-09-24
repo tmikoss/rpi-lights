@@ -1,4 +1,5 @@
 from twisted.web.server import Site
+from twisted.web.static import File
 from twisted.web.resource import Resource
 from twisted.internet import reactor
 
@@ -23,5 +24,7 @@ class ColorController(Resource):
     return manager.colorJson()
 
 if __name__ == '__main__':
-  reactor.listenTCP(3000, Site(ColorController()))
+  root = File('./public')
+  root.putChild('api', ColorController())
+  reactor.listenTCP(3000, Site(root))
   reactor.run()

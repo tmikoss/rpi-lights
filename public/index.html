@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>rpi-lights</title>
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <script src="bower_components/farbtastic/src/farbtastic.js"></script>
+  <script src="app.js"></script>
+  <style media="screen">
+    .container {
+      width: 300px;
+      margin: 25px auto;
+    }
+    input {
+      margin-top: 25px;
+      margin-left: 110px;
+      width: 80px;
+      font-size: 25px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class='container'>
+    <div id="colorPicker">
+    </div>
+    <input type="number" id="alpha" min='0' max='100' value='0'>
+  </div>
+</body>
+
+</html>

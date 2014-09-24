@@ -1,0 +1,19 @@
+{
+  "name": "rpi-lights",
+  "version": "0.0.0",
+  "homepage": "https://github.com/tmikoss/rpi-lights",
+  "authors": [
+    "Toms Mikoss <toms.mikoss@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "farbtastic": "~2.0.0-alpha.1"
+  }
+}
