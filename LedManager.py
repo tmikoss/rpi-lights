@@ -26,8 +26,8 @@ class LedManager(object):
     self._alarms = []
 
     self.alarms  = [
-      "30 6 * * 1,2,3,4,5",
-      "30 8 * * 6,7"
+      "50 6 * * 1,2,3,4,5",
+      "50 8 * * 6,7"
     ]
 
     self.updateLedStrip()
@@ -79,7 +79,7 @@ class LedManager(object):
       self._alarms.remove(alarm)
 
     for alarmString in value:
-      self._alarms.append(Alarm(alarmString, self, seconds=30*60))
+      self._alarms.append(Alarm(alarmString, self, seconds=10*60))
 
   def updateLedStrip(self):
     if self.nextTurnOff and self.nextTurnOff.active():
